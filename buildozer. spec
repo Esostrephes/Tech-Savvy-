@@ -1,0 +1,40 @@
+[app]
+title = MyKivyMDApp
+package.name = mykivymdapp
+package.domain = org.test
+source.dir = .
+source.include_exts = py,png,jpg,kv,txt,json,ttf,otf
+version = 1.0
+
+# VERY IMPORTANT — include kivymd
+requirements = python3,kivy,kivymd
+
+orientation = portrait
+fullscreen = 0
+
+# If you have an icon:
+# icon.filename = icon.png
+
+
+# ---------------------------------------------------------
+# Android Section
+# ---------------------------------------------------------
+
+[android]
+android.api = 34
+android.minapi = 21
+android.sdk = 34
+android.ndk = 25b
+
+# Add any permissions you need
+# Example if you use file picking:
+# android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
+
+
+# ---------------------------------------------------------
+# Buildozer Settings
+# ---------------------------------------------------------
+
+[buildozer]
+log_level = 2
+warn_on_root = 1
