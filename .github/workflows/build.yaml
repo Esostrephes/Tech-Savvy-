@@ -1,32 +1,38 @@
-name: Build APK
+name: Python CI
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'  # choose your Python version
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y python3-pip build-essential git zip unzip openjdk-17-jdk
-          pip install --upgrade pip
-          pip install buildozer kivy kivymd
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Build APK
-        run: buildozer -v android debug
+      - name: Run Python script
+        run: |
+          python main.py  # replace with your script if different
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: mykivymdapp-apk
-          path: bin/*.apk
+          name: python-output
+          path: |
+            *.log
+            *.txt
