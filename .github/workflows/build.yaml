@@ -1,38 +1,68 @@
-name: Python CI
+name: Build APK and Run Python
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
+  workflow_dispatch:  # allows manual trigger
 
 jobs:
-  build:
+  build_and_run:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      # Step 1: Checkout your repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
+      # Step 2: Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # choose your Python version
+          python-version: '3.11'
 
-      - name: Install dependencies
+      # Step 3: Install system dependencies for Buildozer/Android
+      - name: Install system dependencies
         run: |
-          python -m pip install --upgrade pip
+          sudo apt update
+          sudo apt install -y python3-pip python3-setuptools python3-wheel build-essential \
+            git python3-virtualenv openjdk-17-jdk unzip zlib1g-dev libncurses5 libncurses5-dev \
+            libffi-dev libssl-dev autoconf automake libtool pkg-config
+          pip install --upgrade pip
+
+      # Step 4: Install Python dependencies
+      - name: Install Python dependencies
+        run: |
+          pip install cython==0.29.36 buildozer
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Python script
+      # Step 5: Initialize Buildozer (optional if you already have buildozer.spec)
+      - name: Initialize Buildozer
         run: |
-          python main.py  # replace with your script if different
+          if [ ! -f buildozer.spec ]; then buildozer init; fi
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      # Step 6: Build APK
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      # Step 7: Run Python script (optional)
+      - name: Run main.py
+        run: |
+          python main.py
+
+      # Step 8: Upload APK artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
         with:
-          name: python-output
+          name: my-app-apk
+          path: bin/*.apk
+
+      # Step 9: Upload Python logs (optional)
+      - name: Upload Python logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-logs
           path: |
             *.log
             *.txt
