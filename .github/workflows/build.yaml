@@ -36,7 +36,7 @@ jobs:
           pip install cython==0.29.36 buildozer
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Step 5: Initialize Buildozer (optional if you already have buildozer.spec)
+      # Step 5: Initialize Buildozer (if you don't already have a spec file)
       - name: Initialize Buildozer
         run: |
           if [ ! -f buildozer.spec ]; then buildozer init; fi
@@ -46,21 +46,21 @@ jobs:
         run: |
           buildozer -v android debug
 
-      # Step 7: Run Python script (optional)
+      # Step 7: Run main.py (optional)
       - name: Run main.py
         run: |
           python main.py
 
       # Step 8: Upload APK artifact
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
           path: bin/*.apk
 
       # Step 9: Upload Python logs (optional)
       - name: Upload Python logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: python-logs
           path: |
